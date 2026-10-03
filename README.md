@@ -16,6 +16,7 @@ I built it for the Full Stack course at Dalil Training Academy, using:
 
 - Add, edit (in a Bootstrap modal) and delete expenses
 - Filter the table by category (or "All")
+- Sort the table by clicking to the Arrow icon (Increase/decrease by alphabet, value and date)
 - 3 summary cards (total, count, highest). They always count all the expenses, not only the filtered ones
 - Validation for every field, in the browser and again in the Express server
 - Spinner while loading, and clear alerts for errors (also when the server is off)
