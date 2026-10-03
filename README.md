@@ -10,7 +10,7 @@ I built it for the Full Stack course at Dalil Training Academy, using:
 - Node.js, Express and the pg library (backend)
 - PostgreSQL with pgAdmin 4 (database)
 
-## Features
+## Features 
 
 - Add, edit (in a Bootstrap modal) and delete expenses
 - Filter the table by category (or "All")
@@ -89,10 +89,11 @@ Expense-tracker/
 └── README.md
 ```
 
+
+## Sortable table feature:
+ click the arrow next to Title, Amount, Category, or Date to sort the table by that column, ascending or descending — a bonus feature I added beyond the roadmap's requirements.
+
+
 ## The hardest thing I faced and how I solved it
 
 I first built the backend in C# instead of Node.js/Express. It worked, but it did not match what the course asked me to learn in Phase 0 (Node, Express, and the pg library), so I rebuilt the backend in Node.js and Express, keeping the same 5 endpoints, the same validation rules, and the same database. The frontend did not need any changes at all, because it only talks to the API through fetch and does not know (or care) what language answers it — that is the whole point of separating the frontend and the backend.
-
-## Screenshots
-
-_(add your screenshots here: the main page, the edit modal, dark mode, Arabic, and a phone screen)_

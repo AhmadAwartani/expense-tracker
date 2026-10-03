@@ -50,6 +50,7 @@ const editAlertBox = document.getElementById("editAlertBox");
 const spinner = document.getElementById("spinner");
 const tableBody = document.getElementById("tableBody");
 const filterSelect = document.getElementById("filterSelect");
+const sortButtons = document.querySelectorAll(".sort-button");
 
 const totalAmount = document.getElementById("totalAmount");
 const expenseCount = document.getElementById("expenseCount");
@@ -81,6 +82,9 @@ const editModal = new bootstrap.Modal(document.getElementById("editModal"));
 // ---------- data of the page ----------
 
 let allExpenses = [];        // all the expenses that the server sent
+
+// column is null until the user clicks an arrow for the first time
+let sortState = { column: null, direction: "asc" };
 let editingId = null;        // the id of the expense that is open in the edit modal
 let currentLanguage = "en";  // "en" or "ar"
 
@@ -404,7 +408,65 @@ function renderTable(list) {
   }
 }
 
-// shows only the expenses of the selected category ("" means All)
+// sorts a copy of the list by sortState.column and sortState.direction.
+// if no column was clicked yet, the list is returned as it is (newest first)
+function sortList(list) {
+  if (!sortState.column) {
+    return list;
+  }
+
+  const sorted = list.slice();   // slice() copies the array, so allExpenses itself never changes order
+
+  sorted.sort(function (a, b) {
+    let result;
+
+    if (sortState.column === "amount") {
+      result = a.amount - b.amount;
+    } else if (sortState.column === "date") {
+      // the date is text "YYYY-MM-DD", so comparing it as text already sorts it by time
+      result = a.date < b.date ? -1 : (a.date > b.date ? 1 : 0);
+    } else {
+      // "title" or "category": compare the text, alphabet order
+      result = a[sortState.column].localeCompare(b[sortState.column]);
+    }
+
+    return sortState.direction === "asc" ? result : -result;
+  });
+
+  return sorted;
+}
+
+// redraws every arrow: ▼ on the active column (next click goes back to asc),
+// ▲ everywhere else (the default - next click sorts ascending)
+function updateSortArrows() {
+  for (const button of sortButtons) {
+    const arrow = button.querySelector(".sort-arrow");
+    const isActive = button.getAttribute("data-column") === sortState.column;
+    if (isActive && sortState.direction === "asc") {
+      arrow.textContent = "▼";
+    } else {
+      arrow.textContent = "▲";
+    }
+  }
+}
+
+// called when the user clicks one of the 4 sort arrows
+function handleSortClick(column) {
+  if (sortState.column !== column) {
+    // a different column than before: start with ascending
+    sortState.column = column;
+    sortState.direction = "asc";
+  } else if (sortState.direction === "asc") {
+    sortState.direction = "desc";
+  } else {
+    sortState.direction = "asc";
+  }
+
+  updateSortArrows();
+  applyFilter();
+}
+
+// shows only the expenses of the selected category ("" means All), sorted
 function applyFilter() {
   const selectedCategory = filterSelect.value;
 
@@ -415,6 +477,7 @@ function applyFilter() {
     });
   }
 
+  list = sortList(list);
   renderTable(list);
 }
 
@@ -578,6 +641,13 @@ function hideOtherCategoryField() {
 addForm.addEventListener("submit", handleAdd);
 editForm.addEventListener("submit", handleSave);
 filterSelect.addEventListener("change", applyFilter);
+
+// each of the 4 sort arrows calls handleSortClick with its own column name
+for (const button of sortButtons) {
+  button.addEventListener("click", function () {
+    handleSortClick(button.getAttribute("data-column"));
+  });
+}
 
 // shows or hides the "Other category" text field as the user changes the select
 categoryInput.addEventListener("change", function () {
