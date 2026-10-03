@@ -1,0 +1,95 @@
+/* Custom styles. I use Bootstrap classes first, and my own CSS only when I need it. */
+
+/* light gray page background in light mode */
+body {
+  background-color: #f4f5f7;
+}
+
+/* dark mode: a warm dark background instead of plain black/gray */
+html[data-bs-theme="dark"] body {
+  background-color: #1c1a17;
+}
+
+/* the 3 summary cards use CSS Grid: 3 columns on big screens */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* on a phone (or a small screen) the cards go under each other */
+@media (max-width: 768px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* the number in the summary cards: big and bold, like the reference image */
+.summary-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* soft border and shadow on cards, works in light mode and dark mode
+   because it uses a see-through (rgba) color, not a solid white */
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.6rem;
+}
+html[data-bs-theme="dark"] .card {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* the main "Add expense" button: indigo/blue in light mode */
+#addButton {
+  background-color: #4c63f5;
+  border-color: #4c63f5;
+}
+#addButton:hover {
+  background-color: #3b4fd1;
+  border-color: #3b4fd1;
+}
+
+/* in dark mode the same button turns orange, as an accent color */
+html[data-bs-theme="dark"] #addButton {
+  background-color: #ff8a3d;
+  border-color: #ff8a3d;
+  color: #1c1a17;
+}
+html[data-bs-theme="dark"] #addButton:hover {
+  background-color: #e5762e;
+  border-color: #e5762e;
+}
+
+/* the alert stays on the screen when the user scrolls down */
+#alertBox {
+  position: sticky;
+  top: 0.5rem;
+  z-index: 1030;
+}
+
+/* on a phone the table is smaller, so the Edit and Delete buttons stay on the screen */
+@media (max-width: 576px) {
+  .table th,
+  .table td {
+    padding: 0.4rem 0.25rem;
+    font-size: 0.8rem;
+  }
+
+  .table .btn {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.75rem;
+  }
+
+  .table .badge {
+    font-size: 0.65rem;
+  }
+
+  /* the Edit and Delete buttons go under each other */
+  .actions-cell .btn {
+    display: block;
+    width: 100%;
+    margin: 0 0 0.25rem 0;
+  }
+}
+
