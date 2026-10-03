@@ -1,27 +1,15 @@
 -- Expense Tracker: database schema
--- Run this file once to create the tables and add some sample data.
--- Running it again deletes the tables and starts from the sample data.
+-- Run this file in pgAdmin to create the table and add some sample data.
+-- Running it again deletes the table and starts again from the sample data.
 
 DROP TABLE IF EXISTS expenses;
 DROP TABLE IF EXISTS categories;
-
--- the categories are now their own table, instead of a fixed CHECK list.
--- this is what makes them dynamic: adding a row here adds a new allowed category,
--- with no ALTER TABLE needed.
-CREATE TABLE categories (
-  id   SERIAL PRIMARY KEY,
-  name VARCHAR(20) NOT NULL UNIQUE
-);
-
-INSERT INTO categories (name) VALUES
-  ('Food'), ('Transport'), ('Bills'), ('Entertainment'), ('Other'), ('Clothes');
 
 CREATE TABLE expenses (
   id       SERIAL PRIMARY KEY,
   title    VARCHAR(100)  NOT NULL CHECK (btrim(title) <> ''),
   amount   NUMERIC(10,2) NOT NULL CHECK (amount > 0),
-  -- the category must be a real name from the categories table
-  category VARCHAR(20)   NOT NULL REFERENCES categories(name),
+  category VARCHAR(20)   NOT NULL CHECK (btrim(category) <> ''), 
   date     DATE          NOT NULL
 );
 

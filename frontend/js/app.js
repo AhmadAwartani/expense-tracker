@@ -17,8 +17,7 @@ const BADGE_COLORS = {
   Transport: "primary",
   Bills: "danger",
   Entertainment: "warning",
-  Other: "secondary",
-  Clothes: "info"
+  Other: "secondary"
 };
 
 const BADGE_COLOR_PALETTE = ["success", "primary", "danger", "warning", "secondary", "info", "dark"];
@@ -514,8 +513,8 @@ async function handleAdd(event) {
     date: dateInput.value
   };
 
-  // "Other" + the text field: send the typed name too. The server turns it into
-  // the real category, and adds it to the database so it shows up next time.
+  // when "Other" is picked, send the typed name too. The server saves the
+  // expense with that name as its category.
   if (categoryInput.value === "Other") {
     expense.otherCategory = otherCategoryInput.value.trim();
   }
@@ -642,7 +641,7 @@ addForm.addEventListener("submit", handleAdd);
 editForm.addEventListener("submit", handleSave);
 filterSelect.addEventListener("change", applyFilter);
 
-// each of the 4 sort arrows calls handleSortClick with its own column name
+// each sort arrow calls handleSortClick with its own column name with its own column name
 for (const button of sortButtons) {
   button.addEventListener("click", function () {
     handleSortClick(button.getAttribute("data-column"));
@@ -658,7 +657,7 @@ categoryInput.addEventListener("change", function () {
   }
 });
 
-// each item in the dropdown picks its own language directly (no more toggle)
+// each item in the dropdown sets its own language
 const languageItems = document.querySelectorAll("#languageButton + .dropdown-menu .dropdown-item");
 for (const item of languageItems) {
   item.addEventListener("click", function () {
@@ -684,8 +683,6 @@ for (const field of allFields) {
 
 
 async function start() {
-  // the 3 selects are now filled inside refresh() (the categories come from the
-  // server), so start() does not fill them directly anymore
 
   dateInput.value = getToday();
   document.getElementById("year").textContent = new Date().getFullYear();

@@ -42,7 +42,6 @@ const translations = {
     cat_Bills: "Bills",
     cat_Entertainment: "Entertainment",
     cat_Other: "Other",
-    cat_Clothes: "Clothes",
 
     edit_title: "Edit expense",
     btn_save: "Save changes",
@@ -111,7 +110,6 @@ const translations = {
     cat_Bills: "فواتير",
     cat_Entertainment: "ترفيه",
     cat_Other: "أخرى",
-    cat_Clothes: "ملابس",
 
     edit_title: "تعديل المصروف",
     btn_save: "حفظ التعديلات",

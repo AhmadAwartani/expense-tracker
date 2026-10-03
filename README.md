@@ -20,7 +20,7 @@ I built it for the Full Stack course at Dalil Training Academy, using:
 - Dark mode and light mode
 - English and Arabic (the page becomes right-to-left in Arabic)
 - Responsive: works on a phone screen
-- 6 categories instead of the required 5 (I added "Clothes" as my own personal touch)
+- Choose "Other" when adding an expense to type your own category. It shows in the category list and in the filter as long as at least one expense uses it
 
 ## How to run the project from zero
 
@@ -58,7 +58,9 @@ Open the `frontend` folder in VS Code, right click on `index.html` and choose **
 | Method | Path | What it does | Success | Errors |
 |--------|------|--------------|---------|--------|
 | GET | /api/expenses | all the expenses | 200 | - |
+| GET | /api/categories | all the categories | 200 | - |
 | GET | /api/expenses/:id | one expense | 200 | 404 |
+| GET | /api/categories/:id | one categories | 200 | 404 |
 | POST | /api/expenses | add an expense | 201 | 400 |
 | PUT | /api/expenses/:id | update an expense | 200 | 400, 404 |
 | DELETE | /api/expenses/:id | delete an expense | 200 | 404 |
@@ -69,7 +71,7 @@ An expense looks like this:
 { "id": 1, "title": "Lunch", "amount": 4.5, "category": "Food", "date": "2026-01-15" }
 ```
 
-Allowed categories: Food, Transport, Bills, Entertainment, Other, and Clothes (my own addition).
+Allowed categories: Food, Transport, Bills, Entertainment, Other.
 
 ## Project structure
 

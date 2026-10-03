@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 
-// the columns we read every time. The date is turned into text 'YYYY-MM-DD'.
+// the columns we read every time (the date comes back as text 'YYYY-MM-DD')
 
 const COLUMNS = "id, title, amount, category, to_char(date, 'YYYY-MM-DD') AS date";
 
@@ -47,17 +47,53 @@ app.use(function (error, request, response, next) {
   next(error);
 });
 
-// ---------- categories (dynamic, read from the database) ----------
+// works out the category to save.
+// On POST (allowNewCategory is true), if the user picked "Other" and typed a
+// name, that name becomes the category of the expense. It is saved with the
+// expense, so there is nothing else to insert.
+// On PUT (allowNewCategory is false) the category must be one of the existing
+// ones, so an old expense saved as "Other" can still be edited.
+async function resolveCategory(body, allowNewCategory) {
+  if (allowNewCategory && body.category === "Other") {
+    const newCategory = typeof body.otherCategory === "string" ? body.otherCategory.trim() : "";
 
-// returns the names of every allowed category, in the order they were added.
-// NOTE: this used to be a hardcoded array in the code. Now the list lives only
-// in the database, in the categories table - that is what makes it "dynamic".
-async function getAllowedCategories() {
-  const result = await pool.query("SELECT name FROM categories ORDER BY id");
-  return result.rows.map(function (row) {
-    return row.name;
-  });
+    if (newCategory === "") {
+      return { problem: "Please type a name for the new category." };
+    }
+    if (newCategory.length > 20) {
+      return { problem: "The new category must be 20 characters or less." };
+    }
+    return { category: newCategory };
+  }
+
+  const allowedCategories = await getAllowedCategories();
+  if (!allowedCategories.includes(body.category)) {
+    return { problem: "Category must be one of: " + allowedCategories.join(", ") + "." };
+  }
+  return { category: body.category };
 }
+
+
+// ---------- categories ----------
+
+// There is no categories table. The list is whatever categories the saved
+// expenses use right now, so when the last expense of a category is deleted
+// (or moved to another category) that category disappears from the list.
+// "Other" is always in the list, because it is the option that lets the user
+// type a new category.
+async function getAllowedCategories() {
+  const result = await pool.query(
+    "SELECT category FROM expenses GROUP BY category ORDER BY MIN(id)"
+  );
+  const categories = result.rows.map(function (row) {
+    return row.category;
+  });
+  if (!categories.includes("Other")) {
+    categories.push("Other");
+  }
+  return categories;
+}
+
 
 // GET /api/categories -> every category name (200)
 app.get("/api/categories", async function (request, response) {
@@ -78,8 +114,8 @@ function isValidId(text) {
   return Number.isInteger(id) && id > 0;
 }
 
-// ADVANCED (outside the course): checks that a text is a real date in the exact
-// format YYYY-MM-DD (for example 2026-02-30 is the right format, but not a real day)
+// checks that a text is a real date in the format YYYY-MM-DD
+// (2026-02-30 has the right format but it is not a real day)
 function isValidDate(text) {
   if (typeof text !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(text)) {
     return false;
@@ -89,14 +125,12 @@ function isValidDate(text) {
   return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
 }
 
-// works out the final category to save.
-//
-// allowNewCategory is true only for POST (adding a new expense). When the user
-// picked "Other" and typed a new category name, we add that name to the
-// categories table (if it is not already there) and use it instead of "Other".
-//
-// allowNewCategory is false for PUT (editing), so editing an old expense that
-// is already saved as "Other" still works normally, with no text box involved.
+// works out the category to save.
+// On POST (allowNewCategory is true), if the user picked "Other" and typed a
+// name, that name becomes the category of the expense. It is saved with the
+// expense, so there is nothing else to insert.
+// On PUT (allowNewCategory is false) the category must be one of the existing
+// ones, so an old expense saved as "Other" can still be edited.
 async function resolveCategory(body, allowNewCategory) {
   if (allowNewCategory && body.category === "Other") {
     const newCategory = typeof body.otherCategory === "string" ? body.otherCategory.trim() : "";
@@ -107,10 +141,6 @@ async function resolveCategory(body, allowNewCategory) {
     if (newCategory.length > 20) {
       return { problem: "The new category must be 20 characters or less." };
     }
-
-    // ON CONFLICT DO NOTHING: if the user types a category that already exists
-    // (for example "Food" again), we just reuse it instead of failing
-    await pool.query("INSERT INTO categories (name) VALUES ($1) ON CONFLICT (name) DO NOTHING", [newCategory]);
     return { category: newCategory };
   }
 
@@ -177,7 +207,7 @@ function rowToExpense(row) {
   };
 }
 
-// ---------- the 5 endpoints ----------
+// the expense endpoints
 
 // GET /api/expenses -> all the expenses (200)
 app.get("/api/expenses", async function (request, response) {

@@ -24,7 +24,7 @@ html[data-bs-theme="dark"] body {
   }
 }
 
-/* the number in the summary cards: big and bold, like the reference image */
+/* the number in the summary cards: big and bold */
 .summary-value {
   font-size: 2rem;
   font-weight: 700;
