@@ -1,5 +1,7 @@
 # Expense Tracker
 
+GitHub repository: https://github.com/AhmadAwartani/expense-tracker.git
+
 A web app to track my personal expenses. I can add an expense (title, amount, category, date), see all of them in a table, filter by category, edit, delete, and see the total, the number of expenses and the highest expense.
 
 I built it for the Full Stack course at Dalil Training Academy, using:
